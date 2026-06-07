@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>📒 Dynamic Fee Ledger – Play Class to Grade 12 (700+ Students)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="record-book">
+  <div class="book-header">
+    <h1>📒 HIGH-VISIBILITY FEE MANAGEMENT LEDGER</h1>
+    <div class="class-info-panel">
+      <div class="class-info-group">
+        <span>🏫 Class Filter:</span>
+        <select id="headerClassFilter">
+          <option value="all">All Classes</option>
+          <option value="Play Class">Play Class</option>
+          <option value="Pre-Nursery">Pre-Nursery</option>
+          <option value="LKG">LKG</option>
+          <option value="UKG">UKG</option>
+          <option value="Grade 1">Grade 1</option>
+          <option value="Grade 2">Grade 2</option>
+          <option value="Grade 3">Grade 3</option>
+          <option value="Grade 4">Grade 4</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+          <option value="Grade 8">Grade 8</option>
+          <option value="Grade 9">Grade 9</option>
+          <option value="Grade 10">Grade 10</option>
+          <option value="Grade 11">Grade 11</option>
+          <option value="Grade 12">Grade 12</option>
+        </select>
+      </div>
+      <div class="class-info-group">
+        <span>📚 Section Filter:</span>
+        <select id="headerSecFilter">
+          <option value="all">All Sections</option>
+          <option value="Section A">Section A</option>
+          <option value="Section B">Section B</option>
+          <option value="Section C">Section C</option>
+        </select>
+      </div>
+      <div class="class-info-group">
+        <span>📅 Academic Year:</span>
+        <select id="headerYear">
+          <option value="2026 - 2027">2026 - 2027</option>
+          <option value="2027 - 2028">2027 - 2028</option>
+        </select>
+      </div>
+      <div class="class-info-group">
+        <span>📆 Select Month:</span>
+        <select id="monthSelector">
+          <option value="jan">JANUARY</option>
+          <option value="feb">FEBRUARY</option>
+          <option value="mar">MARCH</option>
+          <option value="apr">APRIL</option>
+          <option value="may">MAY</option>
+          <option value="jun">JUNE</option>
+          <option value="jul">JULY</option>
+          <option value="aug">AUGUST</option>
+          <option value="sep">SEPTEMBER</option>
+          <option value="oct">OCTOBER</option>
+          <option value="nov">NOVEMBER</option>
+          <option value="dec">DECEMBER</option>
+        </select>
+      </div>
+      <div class="class-info-group">
+        <button id="addStudentBtn">➕ Add Student</button>
+      </div>
+      <div class="class-info-group">
+        <button id="backupBtn" class="btn-backup">💾 Backup Data (JSON)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-label">🔍 Search Filter:</div>
+    <div class="search-input-wrapper">
+      <svg class="search-icon-svg" viewBox="0 0 512 512">
+        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+      </svg>
+      <input type="text" id="ledgerSearchBox" class="search-box" placeholder="Type to search by Student Name or Phone Number globally..." oninput="executeLedgerSearch()">
+    </div>
+  </div>
+
+  <div class="ledger-scroll-view">
+    <table class="fee-table" id="ledgerTable">
+      <thead id="tableHeader">
+        <!-- Header will be dynamically generated based on selected month -->
+      </thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer-section">
+    <div class="sign-area">
+      <div><strong>📝 Verified By (Signature):</strong><div class="sign-line"></div></div>
+      <div><strong>📅 Audit Closing Date:</strong> <input type="date" style="border:2px solid #cbd5e1; padding:6px 12px; border-radius:6px; font-weight:700; outline:none; font-size:14px; margin-top:4px;"></div>
+    </div>
+    <div class="instruction-card">
+      <p><strong>⚡ MONTH SELECTOR – SHOW ONLY ONE MONTH AT A TIME</strong><br>
+      • Choose a month from the dropdown to view/edit its Date and Amount columns.<br>
+      • All 12 months' data is stored – just switch months to enter different payments.<br>
+      • Add students, assign class/section, save, and generate receipts for any month.<br>
+      • Number spinners are removed – just type the amount.<br>
+      • Click "Backup Data" to download all student records as a JSON file (save to OneDrive or anywhere).</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal-box">
+    <div class="modal-title">🖨️ Generate Student Receipt</div>
+    <div class="status-summary">
+      <p><strong>Student:</strong> <span id="modalStudentName">--</span></p>
+      <p><strong>Phone:</strong> <span id="modalStudentPhone">--</span></p>
+      <div class="status-grid">
+        <div class="status-stat">Paid Months:<br><span id="modalPaidMonths">0</span> / 12</div>
+        <div class="status-stat">Total Paid:<br><span id="modalTotalPaid">0.00</span></div>
+        <div class="status-stat">Total Balance:<br><span id="modalTotalBal">0.00</span></div>
+        <div class="status-stat">Pending Months:<br><span id="modalUnpaidMonths">12</span></div>
+      </div>
+    </div>
+    <label class="month-select-label" for="targetMonthSelect">Select Month to Print Voucher:</label>
+    <select id="targetMonthSelect" class="dropdown-style"></select>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeReceiptModal()">Cancel</button>
+      <button class="btn-print-confirm" onclick="triggerPrintRoutine()">Generate & Print</button>
+    </div>
+  </div>
+</div>
+
+<div id="printable-slip-receipt">
+  <div class="slip-title">
+    OFFICIAL PAYMENT RECEIPT<br>
+    <span style="font-size:12px; font-weight:normal;" id="slipAcademicYear">2026-2027</span>
+  </div>
+  <div class="slip-divider"></div>
+  <div class="slip-row"><span>Date Generated:</span><span id="slipPrintDate">YYYY-MM-DD</span></div>
+  <div class="slip-row"><span>Class / Sec:</span><span id="slipClassInfo">--</span></div>
+  <div class="slip-divider"></div>
+  <div class="slip-row"><strong>Student Name:</strong><strong id="slipStudentName">--</strong></div>
+  <div class="slip-row"><span>Contact Phone:</span><span id="slipStudentPhone">--</span></div>
+  <div class="slip-divider"></div>
+  <div class="slip-row" style="font-weight:bold; font-size:14px;">
+    <span>STATEMENT MONTH:</span><span id="slipTargetMonth">--</span>
+  </div>
+  <div class="slip-row"><span>Month Amount Allocated:</span><span id="slipMonthAmount">0.00</span></div>
+  <div class="slip-row"><span>Payment Entry Date:</span><span id="slipMonthDate">--</span></div>
+  <div class="slip-divider"></div>
+  <div class="slip-row"><span>Total Account Fees:</span><span id="slipTotalFees">0.00</span></div>
+  <div class="slip-row"><span>Cumulative Total Paid:</span><span id="slipTotalPaid">0.00</span></div>
+  <div class="slip-row" style="font-weight:bold;"><span>OUTSTANDING BALANCE:</span><span id="slipTotalBalance">0.00</span></div>
+  <div class="slip-divider"></div>
+  <div class="slip-row"><span>Total Active Paid Months:</span><span id="slipCountPaid">0 Months</span></div>
+  <div class="slip-row"><span>Remaining Unpaid Months:</span><span id="slipCountRemain">12 Months</span></div>
+  <div class="slip-divider"></div>
+  <p style="text-align:center; font-size:11px; margin-top:20px;">Thank you for your payment.<br>System Generated Document.</p>
+</div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
